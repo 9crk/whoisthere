@@ -16,7 +16,7 @@
 #include <ifaddrs.h>
 
 #define PASSWORD "9crk"
-#define LISTEN_PORT	888
+#define LISTEN_PORT	8888
 
 int ms_to_wait;
 int wait_flag;

@@ -17,9 +17,9 @@
 #include <ifaddrs.h>
 
 #define PASSWORD "9crk"
-#define LISTEN_PORT	888
+#define LISTEN_PORT	8888
 
-int im_here(int port, const char* dev_name_like_eth0)
+int im_here(int port, const char* dev_name_like_eth0, char* echoStr)
 {
 	int socketfd;
     socklen_t addr_len;
@@ -65,7 +65,7 @@ int im_here(int port, const char* dev_name_like_eth0)
             return -1;
         }else{
 			if(strcmp(buf, PASSWORD) == 0){	 
-				sendto(socketfd,"echo", 4, 0, (struct sockaddr *)&server_addr,addr_len);
+				sendto(socketfd,echoStr, strlen(echoStr), 0, (struct sockaddr *)&server_addr,addr_len);
 				printf("told once!\n");
 			}
 		}
@@ -76,6 +76,6 @@ int main(int argc, char*argv[])
 	if(argc != 2){
 		printf("sample usage:%s eth0\n", argv[0]);
 	}
-	im_here(LISTEN_PORT, argv[1]);
+	im_here(LISTEN_PORT, argv[1], "ENC");
 }
 
