@@ -92,7 +92,7 @@ void startUdpEcho(char* devName,char* echoContent)
 /*
 extern void startUdpEcho(char* devName,char* echoContent);
 */
-
+#if 0
 int main(int argc, char*argv[])
 {
 	if(argc != 2){
@@ -102,4 +102,4 @@ int main(int argc, char*argv[])
 	sleep(1000);
 	//im_here(LISTEN_PORT, argv[1], "ENC");
 }
-
+#endif

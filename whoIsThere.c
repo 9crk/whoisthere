@@ -19,6 +19,8 @@
 #define LISTEN_PORT	8888
 #define MAX_CLIENT_NUM 256
 
+#include"libscan.h"
+
 int ms_to_wait;
 int wait_flag;
 struct sockaddr_in server_addr;
@@ -35,9 +37,7 @@ void *thread_to_wait(void *arg)
 	//pthread_exit(NULL);
 }
 
-typedef struct IPList{
-	char *ip;
-}IPList;
+
 int query_for_devices(int port, const char* dev_name_like_eth0,IPList** list,int *num,int time_out_ms,char* name)
 {
     socklen_t addr_len;
@@ -122,6 +122,7 @@ void de_query_for_devices(IPList*list,int num)
 	//printf("de malloc = %p\n",list);
 	free(list);
 }
+#if 0
 int main(int argc, char* argv[])
 {
 	IPList *ipListHead;
@@ -134,4 +135,4 @@ int main(int argc, char* argv[])
 	}
 	de_query_for_devices(ipListHead,num);
 }
-
+#endif
