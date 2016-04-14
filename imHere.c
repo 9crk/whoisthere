@@ -17,7 +17,7 @@
 #include <ifaddrs.h>
 
 
-#define LISTEN_PORT	8888
+#include"libscan.h"
 
 int im_here(int port, const char* dev_name_like_eth0, char* echoStr)
 {

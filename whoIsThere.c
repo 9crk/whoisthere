@@ -15,7 +15,7 @@
 #include <linux/sockios.h>
 #include <ifaddrs.h>
 
-#define LISTEN_PORT	8888
+
 #define MAX_CLIENT_NUM 256
 
 #include"libscan.h"
