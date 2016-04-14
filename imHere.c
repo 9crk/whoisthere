@@ -65,6 +65,7 @@ int im_here(int port, const char* dev_name_like_eth0, char* echoStr)
             return -1;
         }else{
 			if(strcmp(buf, PASSWORD) == 0){
+				usleep(10000);//to increase the recive targeting rate.
 				sendto(socketfd,echoStr, strlen(echoStr), 0, (struct sockaddr *)&server_addr,addr_len);
 				printf("told once!\n");
 			}
@@ -77,8 +78,7 @@ typedef struct argStruct{
 }argStruct;
 void* iThread(void*arg){
 	argStruct *iArg = (argStruct*)arg;
-	printf("arg1 = %s\t arg2 = %s\n",iArg->devName,iArg->echoContent);
-	//im_here(LISTEN_PORT, arg[], "ENC");
+	im_here(LISTEN_PORT, iArg->devName, iArg->echoContent);
 }
 void startUdpEcho(char* devName,char* echoContent)
 {
