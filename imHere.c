@@ -64,18 +64,42 @@ int im_here(int port, const char* dev_name_like_eth0, char* echoStr)
             perror("recvErr");
             return -1;
         }else{
-			if(strcmp(buf, PASSWORD) == 0){	 
+			if(strcmp(buf, PASSWORD) == 0){
 				sendto(socketfd,echoStr, strlen(echoStr), 0, (struct sockaddr *)&server_addr,addr_len);
 				printf("told once!\n");
 			}
 		}
 	}
 }
+typedef struct argStruct{
+	char* devName;
+	char* echoContent;
+}argStruct;
+void* iThread(void*arg){
+	argStruct *iArg = (argStruct*)arg;
+	printf("arg1 = %s\t arg2 = %s\n",iArg->devName,iArg->echoContent);
+	//im_here(LISTEN_PORT, arg[], "ENC");
+}
+void startUdpEcho(char* devName,char* echoContent)
+{
+	pthread_t pid;
+	argStruct arg;
+	arg.devName = devName;
+	arg.echoContent = echoContent;
+	pthread_create(&pid,NULL,iThread,&arg);
+	usleep(1000);
+}
+/*
+extern void startUdpEcho(char* devName,char* echoContent);
+*/
+
 int main(int argc, char*argv[])
 {
 	if(argc != 2){
 		printf("sample usage:%s eth0\n", argv[0]);
 	}
-	im_here(LISTEN_PORT, argv[1], "ENC");
+	startUdpEcho("eth0","ENC");
+	sleep(1000);
+	//im_here(LISTEN_PORT, argv[1], "ENC");
 }
 

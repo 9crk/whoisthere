@@ -17,6 +17,7 @@
 
 #define PASSWORD "9crk"
 #define LISTEN_PORT	8888
+#define MAX_CLIENT_NUM 256
 
 int ms_to_wait;
 int wait_flag;
@@ -42,7 +43,7 @@ void *thread_to_process(void *arg)
 	//inet_ntoa(server_addr.sin_addr),ntohs(server_addr.sin_port)
 	pthread_exit(NULL);
 }*/
-int query_for_devices(int port, const char* dev_name_like_eth0, int time_out_ms)
+int query_for_devicesEx(int port, const char* dev_name_like_eth0, int time_out_ms)
 {
     socklen_t addr_len;
 	int socketfd;
@@ -106,6 +107,78 @@ int query_for_devices(int port, const char* dev_name_like_eth0, int time_out_ms)
 	close(socketfd);
 	return 0;
 }
+int query_for_devices(int port, const char* dev_name_like_eth0,char***IPlist,int *num,int time_out_ms,char* name)
+{
+    socklen_t addr_len;
+	int socketfd;
+    char buf[64];
+    struct sockaddr_in *sin;
+    struct ifreq ifr;
+	pthread_t wait_thread, tmp_thread;
+	int cnt = 0;
+	*IPlist = (char**)malloc(MAX_CLIENT_NUM*sizeof(char*));
+//open handle
+    if((socketfd = socket(AF_INET,SOCK_DGRAM,0)) < 0){
+        perror("socket");
+        return -1;
+    }
+//get broadcast IP
+	strcpy(ifr.ifr_name, dev_name_like_eth0);
+    if(ioctl(socketfd, SIOCGIFBRDADDR/*SIOCGIFADDR*/,&ifr) < 0){
+        perror("ioctl error\n");
+        return -1;
+    }
+    sin = (struct sockaddr_in *)&(ifr.ifr_addr);
+//set supporting broadcast
+	int i=1;
+    socklen_t len = sizeof(i);
+	setsockopt(socketfd,SOL_SOCKET,SO_BROADCAST,&i,len);
+//initial sendding
+	memset(&server_addr,0,sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr = sin->sin_addr;
+    server_addr.sin_port = htons(port);
+    addr_len=sizeof(server_addr);
+//send
+	if(sendto(socketfd, PASSWORD, sizeof(PASSWORD),0,(struct sockaddr*)&server_addr,addr_len) < 0){
+		perror("sendErr");
+		return -1;
+	}
+//wait for timeout
+	ms_to_wait = time_out_ms;
+	wait_flag = 0;
+	if (pthread_create(&wait_thread, NULL, thread_to_wait,NULL)!=0) {
+        printf("Create thread error!\n");
+        return -1;
+    }
+//wait for devices echo
+	while(wait_flag == 0){
+		if (recvfrom(socketfd, buf, 64, 0, (struct sockaddr*)&server_addr, &addr_len) < 0){
+            perror("recvErr");
+            return -1;
+        }else{
+			printf("recv from: %s\n", inet_ntoa(server_addr.sin_addr));
+			if(strcmp(name,buf) == 0){
+				printf("recv from: %s\n", inet_ntoa(server_addr.sin_addr));
+				*IPlist[cnt] = (char*)malloc(16);
+				strcpy(*IPlist[cnt],buf);		
+				cnt++;
+			}
+		}
+	}
+	printf("I'v wait %d ms, program done!\n", ms_to_wait);
+	close(socketfd);
+	return 0;
+}
+
+void de_query_for_devices(char**IPlist,int num)
+{
+	int i;
+	for(i=0;i<num;i++){
+		free(IPlist[i]);
+	}
+	free(IPlist);
+}
 int main(int argc, char* argv[])
 {
 	if(argc != 3){
@@ -113,6 +186,15 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 	deviceList = argv[2];
-	query_for_devices(LISTEN_PORT, argv[1], 2000);
+	char**ipList;
+	int i,num;
+	/*
+	query_for_devices(LISTEN_PORT,"eth0",&ipList,&num,2000,"ENC");
+	for(i=0;i<num;i++){
+		printf("IP:%s\n",ipList[i]);
+	}
+	de_query_for_devices(ipList,num);
+	*/
+	query_for_devicesEx(LISTEN_PORT, argv[1], 2000);
 }
 
