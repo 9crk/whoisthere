@@ -15,7 +15,6 @@
 #include <linux/sockios.h>
 #include <ifaddrs.h>
 
-#define PASSWORD "9crk"
 #define LISTEN_PORT	8888
 #define MAX_CLIENT_NUM 256
 
@@ -72,7 +71,7 @@ int query_for_devices(int port, const char* dev_name_like_eth0,IPList** list,int
     server_addr.sin_port = htons(port);
     addr_len=sizeof(server_addr);
 //send
-	if(sendto(socketfd, PASSWORD, sizeof(PASSWORD),0,(struct sockaddr*)&server_addr,addr_len) < 0){
+	if(sendto(socketfd, name, strlen(name),0,(struct sockaddr*)&server_addr,addr_len) < 0){
 		perror("sendErr");
 		return -1;
 	}
@@ -122,7 +121,7 @@ void de_query_for_devices(IPList*list,int num)
 	//printf("de malloc = %p\n",list);
 	free(list);
 }
-#if 0
+#if 1
 int main(int argc, char* argv[])
 {
 	IPList *ipListHead;

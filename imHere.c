@@ -16,7 +16,7 @@
 #include <linux/sockios.h>
 #include <ifaddrs.h>
 
-#define PASSWORD "9crk"
+
 #define LISTEN_PORT	8888
 
 int im_here(int port, const char* dev_name_like_eth0, char* echoStr)
@@ -64,7 +64,7 @@ int im_here(int port, const char* dev_name_like_eth0, char* echoStr)
             perror("recvErr");
             return -1;
         }else{
-			if(strcmp(buf, PASSWORD) == 0){
+			if(strcmp(buf, echoStr) == 0){
 				usleep(10000);//to increase the recive targeting rate.
 				sendto(socketfd,echoStr, strlen(echoStr), 0, (struct sockaddr *)&server_addr,addr_len);
 				printf("told once!\n");
@@ -92,7 +92,7 @@ void startUdpEcho(char* devName,char* echoContent)
 /*
 extern void startUdpEcho(char* devName,char* echoContent);
 */
-#if 0
+#if 1
 int main(int argc, char*argv[])
 {
 	if(argc != 2){
