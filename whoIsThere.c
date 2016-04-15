@@ -37,7 +37,7 @@ void *thread_to_wait(void *arg)
 }
 
 
-int query_for_devices(int port, const char* dev_name_like_eth0,IPList** list,int *num,int time_out_ms,char* name)
+int query_for_devices(const char* dev_name_like_eth0,IPList** list,int *num,int time_out_ms,char* name)
 {
     socklen_t addr_len;
 	int ret,socketfd;
@@ -68,7 +68,7 @@ int query_for_devices(int port, const char* dev_name_like_eth0,IPList** list,int
 	memset(&server_addr,0,sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr = sin->sin_addr;
-    server_addr.sin_port = htons(port);
+    server_addr.sin_port = htons(LISTEN_PORT);
     addr_len=sizeof(server_addr);
 //send
 	if(sendto(socketfd, name, strlen(name),0,(struct sockaddr*)&server_addr,addr_len) < 0){
@@ -121,13 +121,13 @@ void de_query_for_devices(IPList*list,int num)
 	//printf("de malloc = %p\n",list);
 	free(list);
 }
-#if 1
+#if 0
 int main(int argc, char* argv[])
 {
 	IPList *ipListHead;
 	int i,num;
 	
-	query_for_devices(LISTEN_PORT,"eth0",&ipListHead,&num,2000,"ENC");
+	query_for_devices("eth0",&ipListHead,&num,2000,"ENC");
 	printf("cnt = %d\n",num);	
 	for(i=0;i<num;i++){
 		printf("IP:%s\n",ipListHead[i].ip);

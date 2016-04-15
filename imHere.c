@@ -80,7 +80,7 @@ void* iThread(void*arg){
 	argStruct *iArg = (argStruct*)arg;
 	im_here(LISTEN_PORT, iArg->devName, iArg->echoContent);
 }
-void startUdpEcho(char* devName,char* echoContent)
+void startBroadCastEcho(char* devName,char* echoContent)
 {
 	pthread_t pid;
 	argStruct arg;
@@ -92,13 +92,13 @@ void startUdpEcho(char* devName,char* echoContent)
 /*
 extern void startUdpEcho(char* devName,char* echoContent);
 */
-#if 1
+#if 0
 int main(int argc, char*argv[])
 {
 	if(argc != 2){
 		printf("sample usage:%s eth0\n", argv[0]);
 	}
-	startUdpEcho("eth0","ENC");
+	startBroadCastEcho("eth0","ENC");
 	sleep(1000);
 	//im_here(LISTEN_PORT, argv[1], "ENC");
 }
