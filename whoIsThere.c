@@ -37,7 +37,7 @@ void *thread_to_wait(void *arg)
 }
 
 
-int query_for_devices(const char* dev_name_like_eth0,IPList** list,int *num,int time_out_ms,char* name)
+int query_for_devices(const char* dev_name_like_eth0,IPList**list,int *num,int time_out_ms,char* name)
 {
     socklen_t addr_len;
 	int ret,socketfd;
@@ -97,10 +97,10 @@ int query_for_devices(const char* dev_name_like_eth0,IPList** list,int *num,int 
             //return -1;
         }else{
 			if(strcmp(name,buf) == 0){
-			//	printf("recv from: %s\n", inet_ntoa(server_addr.sin_addr));
-				list[cnt]->ip = (char*)malloc(16);
-				//printf("malloc = %p\n",list[cnt]->ip);
-				sprintf(list[cnt]->ip,"%s",inet_ntoa(server_addr.sin_addr));
+				//printf("recv from: %s\n", inet_ntoa(server_addr.sin_addr));
+				(*list)[cnt].ip = (char*)malloc(16);
+				//printf("malloc = %p\n",(*list)[cnt].ip);
+				sprintf((*list)[cnt].ip,"%s",inet_ntoa(server_addr.sin_addr));
 				cnt++;
 			}
 		}
@@ -127,11 +127,12 @@ int main(int argc, char* argv[])
 	IPList *ipListHead;
 	int i,num;
 	
-	query_for_devices("eth0",&ipListHead,&num,2000,"ENC");
+	query_for_devices("eth0",&ipListHead,&num,2000,"SCREEN");
 	printf("cnt = %d\n",num);	
 	for(i=0;i<num;i++){
 		printf("IP:%s\n",ipListHead[i].ip);
 	}
+	
 	de_query_for_devices(ipListHead,num);
 }
 #endif
